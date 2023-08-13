@@ -1,0 +1,25 @@
+<script setup>
+
+const props = defineProps({
+    imgSrc: String
+})
+
+
+</script>
+
+<template>
+    <div class="image-wrapper">
+        <img :src=imgSrc alt=""/>
+    </div>
+</template>
+
+<style scoped>
+.image-wrapper {
+  width: 100px;
+  height: 100px;
+}
+.image-wrapper img{
+    width: 100px;
+  height: 100px;
+}
+</style>
