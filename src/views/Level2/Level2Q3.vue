@@ -16,11 +16,11 @@
     <div class="level1-contianer">
       <div>
         <RouterLink to="/HelpL2Q3">
-          <Image imgSrc="src/assets/images/HELP.png" />
+          <Image imgSrc="src/assets/images/help-img.png" />
         </RouterLink>
       </div>
       <div @click="playAudio" class="clickable">
-        <Image imgSrc="src/assets/images/audio.jpg" />
+        <Image imgSrc="src/assets/images/audio-img.png" />
         <audio ref="audioElement" controls style="display: none">
           <source :src="audioSrc" type="audio/mpeg" />
           Your browser does not support the audio element.
@@ -28,13 +28,13 @@
       </div>
       <div>
         <RouterLink to="/">
-          <Image imgSrc="src/assets/images/HOME.jpg" />
+          <Image imgSrc="src/assets/images/home-image.png" />
         </RouterLink>
       </div>
 
       <div>
         <RouterLink to="/levels">
-          <Image imgSrc="src/assets/images/next.jpg" />
+          <Image imgSrc="src/assets/images/next-img.png" />
         </RouterLink>
       </div>
     </div>
@@ -58,7 +58,7 @@ const counter = useCounterStore();
 const inputAnswer = ref("");
 
 const CheckAnswer = () => {
-  if (inputAnswer.value == "EUA GXK") {
+  if (inputAnswer.value == "OMBPV") {
     rightAnswer();
   } else {
     wrongAnswer();
@@ -98,7 +98,7 @@ const navigateToNextPage = () => {
 
 /* Audio */
 
-const audioSrc = ref("./src/assets/audio/song5.mp3"); // Replace with the actual path to your audio file
+const audioSrc = ref("./src/assets/audio/L2Q3A3.mp3"); // Replace with the actual path to your audio file
 const audioElement = ref(null);
 
 const playAudio = () => {
@@ -119,16 +119,18 @@ const playAudio = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 20px;
+  
 }
 .level1-title {
   text-align: center;
   font-size: 62px;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 .level1-subtitle {
   text-align: center;
   font-size: 62px;
-  margin-top: 60px;
+  margin-top: 40px;
 }
 .btn-container {
   width: 60%;
@@ -136,18 +138,18 @@ const playAudio = () => {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 .btn {
   border: 2px solid white;
-  border-radius: 50%;
+  border-radius: 5%;
   font-size: 30px;
   padding: 7px 30px;
 }
 .level1-contianer {
   max-width: 90%;
   margin: 0 auto;
-  margin-top: 100px;
+  margin-top: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;

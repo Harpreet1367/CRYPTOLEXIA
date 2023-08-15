@@ -20,6 +20,7 @@ import { RouterLink } from 'vue-router'
   align-items: center;
   height: 100vh;
   background-color: #a8e685;
+
 }
 .game-intro h1 {
   font-size: 4rem;

@@ -80,7 +80,7 @@ const navigateToNextPage = () => {
 
 /* Audio */
 
-const audioSrc = ref("./src/assets/audio/song5.mp3"); // Replace with the actual path to your audio file
+const audioSrc = ref("./src/assets/audio/L1Q1A1.mp3"); // Replace with the actual path to your audio file
 const audioElement = ref(null);
 
 const playAudio = () => {
@@ -102,6 +102,7 @@ const playAudio = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 40px;
 }
 .level1-title {
   text-align: center;
@@ -122,9 +123,10 @@ const playAudio = () => {
 }
 .btn {
   border: 2px solid white;
-  border-radius: 50%;
+  border-radius: 5%;
   font-size: 30px;
   padding: 7px 30px;
+  margin-top: 30px;
 }
 .level1-contianer {
   max-width: 90%;

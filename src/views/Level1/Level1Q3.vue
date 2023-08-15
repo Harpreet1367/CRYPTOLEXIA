@@ -2,7 +2,7 @@
   <div class="level1-page">
     <h1 class="level1-title">CAESER CIPHER</h1>
     <h3 class="level1-subtitle">
-      QUES:3 Plaintext: YOU ARE BEAUTIFUL.Key: 6 Ciphertext: …………….?
+      QUES:3 Plaintext: YOU ARE BEAUTIFUL, Key: 6, Ciphertext:?
     </h3>
     <div class="coding-image">
       <img class="" src="../../assets/images/tab2_mod26-encodings.webp" />
@@ -16,12 +16,12 @@
     <div class="level1-contianer">
       <div>
         <RouterLink to="/HelpL1Q3">
-          <Image imgSrc="src/assets/images/HELP.png" />
+          <Image imgSrc="src/assets/images/help-img.png" />
         </RouterLink>
       </div>
 
       <div @click="playAudio" class="clickable">
-        <Image imgSrc="src/assets/images/audio.jpg" />
+        <Image imgSrc="src/assets/images/audio-img.png" />
         <audio ref="audioElement" controls style="display: none">
           <source :src="audioSrc" type="audio/mpeg" />
           Your browser does not support the audio element.
@@ -29,13 +29,13 @@
       </div>
       <div>
         <RouterLink to="/">
-          <Image imgSrc="src/assets/images/HOME.jpg" />
+          <Image imgSrc="src/assets/images/home-image.png" />
         </RouterLink>
       </div>
 
       <div>
         <RouterLink to="/levels">
-          <Image imgSrc="src/assets/images/next.jpg" />
+          <Image imgSrc="src/assets/images/next-img.png" />
         </RouterLink>
       </div>
     </div>
@@ -57,7 +57,7 @@ const counter = useCounterStore();
 const inputAnswer = ref("");
 
 const CheckAnswer = () => {
-  if (inputAnswer.value == "EUA GXK") {
+  if (inputAnswer.value == "EUA GXK HKGAZOLAR") {
     rightAnswer();
   } else {
     wrongAnswer();
@@ -99,7 +99,7 @@ const navigateToNextPage = () => {
 
 /* Audio */
 
-const audioSrc = ref("./src/assets/audio/song5.mp3"); // Replace with the actual path to your audio file
+const audioSrc = ref("./src/assets/audio/L1Q3A3.mp3"); // Replace with the actual path to your audio file
 const audioElement = ref(null);
 
 const playAudio = () => {
@@ -136,7 +136,7 @@ const playAudio = () => {
 }
 .btn {
   border: 2px solid white;
-  border-radius: 50%;
+  border-radius: 5%;
   font-size: 30px;
   padding: 7px 30px;
 }
@@ -152,6 +152,8 @@ const playAudio = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 30px;
 }
 
 .answer-container{

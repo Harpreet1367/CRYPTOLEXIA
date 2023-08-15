@@ -2,12 +2,12 @@
 import { RouterLink } from 'vue-router'
 </script>
 <template>
-    <div>
+    <div class="level-page">
       <div class="level-contianer">
-        <h1>CLICK ON THE EACH TO LEVEL TO WIN THE GAME</h1>
+        <h1>PLAY EACH LEVEL TO WIN THE GAME</h1>
         <div class="first-level">
           <RouterLink to="/Level1Q1">
-              <img class="level-img" src="../assets/images/1l.jpg" />
+              <img class="level-img" src="../assets/images/1l.png" />
           </RouterLink>
         </div>
   
@@ -27,10 +27,15 @@ import { RouterLink } from 'vue-router'
   </template>
  
   <style scoped>
-  .level-contianer{
+.level-page{
+  background-color: #85cbe6;
+  height: 100vh;
+}
+.level-contianer{
       max-width: 90%;
       margin: 0 auto;
       max-height: 100vh;
+      
       
   }
   .level-contianer h1{

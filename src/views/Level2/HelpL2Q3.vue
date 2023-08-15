@@ -23,7 +23,7 @@
 
     <div class="help1-contianer">
       <div @click="playAudio" class="clickable">
-        <Image imgSrc="src/assets/images/audio.jpg" />
+        <Image imgSrc="src/assets/images/audio-img.png" />
         <audio ref="audioElement" controls style="display: none">
           <source :src="audioSrc" type="audio/mpeg" />
           Your browser does not support the audio element.
@@ -32,7 +32,7 @@
 
       <div>
         <RouterLink to="/Level2Q3">
-          <img class="level1" src="../../assets/images/back1.png" />
+          <img class="level1" src="../../assets/images/back-img.png" />
         </RouterLink>
       </div>
     </div>
@@ -44,7 +44,7 @@ import { ref } from "vue";
 
 /* Audio */
 
-const audioSrc = ref("./src/assets/audio/song5.mp3"); // Replace with the actual path to your audio file
+const audioSrc = ref("./src/assets/audio/HL2Q3A3.mp3"); // Replace with the actual path to your audio file
 const audioElement = ref(null);
 
 const playAudio = () => {
@@ -70,7 +70,12 @@ const playAudio = () => {
   align-items: center;
   justify-content: space-between;
 }
-
+.head
+{
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 40px;
+}
 .help1 {
   text-align: center;
   font-size: 70px;
