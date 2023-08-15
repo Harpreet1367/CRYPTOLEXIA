@@ -1,7 +1,7 @@
 <script setup>
 
 const props = defineProps({
-    imgSrc: String
+    src: String
 })
 
 
@@ -9,7 +9,7 @@ const props = defineProps({
 
 <template>
     <div class="image-wrapper">
-        <img :src=imgSrc alt=""/>
+        <img :src=src alt=""/>
     </div>
 </template>
 

@@ -26,7 +26,7 @@
 
     <div class="help1-contianer">
       <div @click="playAudio" class="clickable">
-        <Image imgSrc="src/assets/images/audio-img.png" />
+        <img class="level1" src="../../assets/images/audio-img.png" />
         <audio ref="audioElement" controls style="display: none">
           <source :src="audioSrc" type="audio/mpeg" />
           Your browser does not support the audio element.

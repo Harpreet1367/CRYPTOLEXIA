@@ -19,11 +19,11 @@
     <div class="level1-contianer">
       <div>
         <RouterLink to="/HelpL1Q2">
-          <Image imgSrc="src/assets/images/help-img.png" />
+          <img class="level1" src="../../assets/images/help-img.png" />
         </RouterLink>
       </div>
       <div @click="playAudio" class="clickable">
-        <Image imgSrc="src/assets/images/audio-img.png" />
+        <img class="level1" src="../../assets/images/audio-img.png" />
         <audio ref="audioElement" controls style="display: none">
           <source :src="audioSrc" type="audio/mpeg" />
           Your browser does not support the audio element.
@@ -31,12 +31,12 @@
       </div>
       <div>
         <RouterLink to="/">
-          <Image imgSrc="src/assets/images/home-image.png" />
+          <img class="level1" src="../../assets/images/home-image.png" />
         </RouterLink>
       </div>
       <div>
         <RouterLink to="/Level1Q3">
-          <Image imgSrc="src/assets/images/next-img.png" />
+          <img class="level1" src="../../assets/images/next-img.png" />
         </RouterLink>
       </div>
     </div>
@@ -125,6 +125,10 @@ const playAudio = () => {
   text-align: center;
   font-size: 62px;
   margin-top: 60px;
+}
+.level1 {
+  width: 100px;
+  height: 100px;
 }
 .btn-container {
   width: 60%;

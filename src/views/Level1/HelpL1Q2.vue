@@ -16,7 +16,7 @@
     </div>
     <div class="help1-contianer">
       <div @click="playAudio" class="clickable">
-        <Image imgSrc="src/assets/images/audio-img.png" />
+        <img class="level1" src="../../assets/images/audio-img.png" />
         <audio ref="audioElement" controls style="display: none">
           <source :src="audioSrc" type="audio/mpeg" />
           Your browser does not support the audio element.
@@ -25,7 +25,7 @@
 
       <div>
         <RouterLink to="/Level1Q2">
-          <img class="level1" src="../../assets/images/back-img.png" />
+          <img  class="level1" src="../../assets/images/back-img.png" />
         </RouterLink>
       </div>
     </div>
@@ -80,6 +80,10 @@ const playAudio = () => {
 }
 .Para ol{
   margin-left: 40px;
+}
+.level1 {
+  width: 100px;
+  height: 100px;
 }
 .head
 {
