@@ -4,15 +4,15 @@ import { RouterLink } from 'vue-router'
 
 <template>
   <div class="game-intro">
-    <img class="student-image" src="../assets/images/cartoon-student.png" alt="student-img">
-    <h1>CRYPTOLEXIA</h1>
-    <RouterLink to="/levels">
+    <img class="student-image" src="../../assets/images/cartoon-student.png" alt="student-img">
+    <h1>CAPTCHALEXIA</h1>
+    <RouterLink to="/username">
       <button>Start Game</button>
     </RouterLink>
   </div>
 </template>
 
-<style scoped>
+<style scope>
 .game-intro {
   display: flex;
   flex-direction: column;
