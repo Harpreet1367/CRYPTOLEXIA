@@ -97,75 +97,106 @@ beforeDestroy() {
     }),
   },
   methods: {
-    ...mapActions(['updatePuzzlePageTimeSpent','updatePuzzlePageNumberOfAttempts','incrementAttempts_text']),
-      
-      saveTheTime() {
-      this.updatePuzzlePageTimeSpent(this.timerSpent);
-      this.updatePuzzlePageNumberOfAttempts(this.numberOfTries);
-    },
-      startTimer() {
-      this.timer = setInterval(() => {
-        this.timerSpent = Math.floor((new Date() - this.entryTime) / 1000);
-      }, 1000);
-    },
-    stopTimer() {
-      clearInterval(this.timer);
-    },
-    startDrag(event) {
-      this.isDragging = true;
+  ...mapActions(['updatePuzzlePageTimeSpent','updatePuzzlePageNumberOfAttempts','incrementAttempts_text']),
+
+  saveTheTime() {
+    this.updatePuzzlePageTimeSpent(this.timerSpent);
+    this.updatePuzzlePageNumberOfAttempts(this.numberOfTries);
+  },
+
+  startTimer() {
+    this.timer = setInterval(() => {
+      this.timerSpent = Math.floor((new Date() - this.entryTime) / 1000);
+    }, 1000);
+  },
+
+  stopTimer() {
+    clearInterval(this.timer);
+  },
+
+  startDrag(event) {
+    this.isDragging = true;
+
+    // Handle touch events
+    if (event.type === 'touchstart') {
+      this.startX = event.touches[0].clientX;
+      this.startY = event.touches[0].clientY;
+    } else {
       this.startX = event.clientX;
       this.startY = event.clientY;
-      this.offsetLeft = this.keyPosition.left;
-      this.offsetTop = this.keyPosition.top;
-      document.addEventListener('mousemove', this.onDrag);
-      document.addEventListener('mouseup', this.stopDrag);
-    },
-    onDrag(event) {
-      if (this.isDragging) {
-        const moveX = event.clientX - this.startX;
-        const moveY = event.clientY - this.startY;
-        this.keyPosition.left = this.offsetLeft + moveX;
-        this.keyPosition.top = this.offsetTop + moveY;
-      }
-    },
-    stopDrag() {
-      if (this.isDragging) {
-        this.isDragging = false;
-        document.removeEventListener('mousemove', this.onDrag);
-        document.removeEventListener('mouseup', this.stopDrag);
-        //this.checkMatch();
-      }
-    },
-    checkMatch() {
-      const threshold = 10; // Adjust this value based on difficulty
-      if (
-        Math.abs(this.keyPosition.left - this.matchedLock.left) < threshold &&
-        Math.abs(this.keyPosition.top - this.matchedLock.top) < threshold
-      ) {
-        this.gifUrl = successGif;
-        this.showGif = true;
-        this.isDragging = true;
-        this.saveTheTime();
-        setTimeout(() => {
-          this.showGif = false;
-          this.$router.push('/Rotatingform');
-        }, 3000);
-        
-        
-      } else{
-        this.gifUrl = failureGif; // Set the failure GIF
-        this.showGif = true;
-      }
-      this.numberOfTries++;
-      setTimeout(() => {
-          this.showGif = false; // Hide the GIF after 3 seconds
-        }, 6000);
-        //this.incrementAttempts_text();
-          if (this.numberOfTries >= 5) {
-            this.$router.push('/Rotatingform');
-          }
-    },
+    }
+
+    this.offsetLeft = this.keyPosition.left;
+    this.offsetTop = this.keyPosition.top;
+
+    document.addEventListener('mousemove', this.onDrag);
+    document.addEventListener('mouseup', this.stopDrag);
+    
+    // Add touch event listeners
+    document.addEventListener('touchmove', this.onDrag);
+    document.addEventListener('touchend', this.stopDrag);
   },
+
+  onDrag(event) {
+    if (this.isDragging) {
+      let moveX, moveY;
+
+      // Handle touch events
+      if (event.type === 'touchmove') {
+        moveX = event.touches[0].clientX - this.startX;
+        moveY = event.touches[0].clientY - this.startY;
+      } else {
+        moveX = event.clientX - this.startX;
+        moveY = event.clientY - this.startY;
+      }
+
+      this.keyPosition.left = this.offsetLeft + moveX;
+      this.keyPosition.top = this.offsetTop + moveY;
+    }
+  },
+
+  stopDrag() {
+    if (this.isDragging) {
+      this.isDragging = false;
+
+      document.removeEventListener('mousemove', this.onDrag);
+      document.removeEventListener('mouseup', this.stopDrag);
+
+      // Remove touch event listeners
+      document.removeEventListener('touchmove', this.onDrag);
+      document.removeEventListener('touchend', this.stopDrag);
+    }
+  },
+
+  checkMatch() {
+    const threshold = 10; // Adjust this value based on difficulty
+    if (
+      Math.abs(this.keyPosition.left - this.matchedLock.left) < threshold &&
+      Math.abs(this.keyPosition.top - this.matchedLock.top) < threshold
+    ) {
+      this.gifUrl = successGif;
+      this.showGif = true;
+      this.isDragging = true;
+      this.saveTheTime();
+      setTimeout(() => {
+        this.showGif = false;
+        this.$router.push('/Rotatingform');
+      }, 3000);
+      
+    } else {
+      this.gifUrl = failureGif; // Set the failure GIF
+      this.showGif = true;
+    }
+    this.numberOfTries++;
+    setTimeout(() => {
+      this.showGif = false; // Hide the GIF after 3 seconds
+    }, 6000);
+    if (this.numberOfTries >= 5) {
+      this.$router.push('/Rotatingform');
+    }
+  },
+}
+
 };
 </script>
 

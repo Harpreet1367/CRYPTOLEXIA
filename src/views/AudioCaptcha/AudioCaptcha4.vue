@@ -101,8 +101,8 @@ computed: {
     //return new URL(`../../assets/audio/Captcha.mp3`, import.meta.url).href;
     return audio.default;
   },
-  refreshCaptchaCode() {
-      this.captchaCode = this.generateCaptchaCode();  
+  async refreshCaptchaCode() {
+      this.captchaCode = await this.getAudio();  
     },
   async changeAudioSrc() {
     this.audioSrc = await this.getAudio();
@@ -141,12 +141,13 @@ computed: {
         // CAPTCHA failed, you can handle this case accordingly
         this.gifUrl = failureGif; // Set the failure GIF
         this.showGif = true; 
-        this.refreshCaptchaCode();
+        this.changeAudioSrc();
         this.userInput = "";
 
         setTimeout(() => {
           this.showGif = false; // Hide the GIF after 3 seconds
         }, 3000);
+
         this.numberOfTries++;
         if (this.numberOfTries >= 5) 
         {

@@ -137,7 +137,7 @@ computed: {
         // CAPTCHA failed, you can handle this case accordingly
         this.gifUrl = failureGif; // Set the failure GIF
         this.showGif = true; 
-        this.refreshCaptchaCode();
+        this.changeAudioSrc();
         this.userInput = "";
 
         setTimeout(() => {
