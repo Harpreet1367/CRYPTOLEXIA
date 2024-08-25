@@ -99,7 +99,7 @@ export default {
       if (this.validateForm()) {
         try {
           console.log('Submitted Feedback:', this.formData);
-          await axios.post('https://cryptolexia.ahmedghaleb.com/api/captcha3', {
+          await axios.post('https://captchalexia.preetkaur19.com/api/captcha3', {
             username: this.username,
             time_spent: this.totalAudioPageTimeSpent,
             number_of_attempts: this.totalAudioPageNumberOfAttempts,

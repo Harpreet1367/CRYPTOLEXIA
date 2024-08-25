@@ -1,14 +1,14 @@
 <template>
   <div class="match-key-captcha">
-    <h1>PUZZLE CAPTCHA {{ numberOfTries }}</h1>
-    <h2>Open the lock with the key</h2>
-    
+    <h1 style="display: flex; justify-content: center; align-items: center; height: 20vh;">PUZZLE CAPTCHA {{ numberOfTries }}</h1>
+    <h2 style="display: flex; justify-content: center; align-items: center; margin-top: 10px; margin-bottom: 40px;">Open the lock with the key</h2>
+
     <div class="captcha-container">
       <!-- Locks -->
       <div
         v-for="lock in locks"
         :key="lock.id"
-        class="lock"
+        :class="['lock', { selected: selectedLock === lock.id }]" 
         :style="{ left: `${lock.left}px`, top: `${lock.top}px` }"
         @click="selectLock(lock)"
       >
@@ -16,7 +16,7 @@
       </div>
       <!-- Key -->
       <div
-        class="key"
+        :class="['key', { selected: selectedKey }]" 
         :style="{ left: `${keyPosition.left}px`, top: `${keyPosition.top}px` }"
         @click="selectKey"
       >
@@ -54,13 +54,12 @@ export default {
   methods: {
     selectKey() {
       this.selectedKey = true;
-      console.log('Key selected');
+      this.selectedLock = null; // Reset lock selection when key is selected
     },
 
     selectLock(lock) {
       if (this.selectedKey) {
         this.selectedLock = lock.id;
-        console.log(`Lock ${lock.id} selected`);
       }
     },
 
@@ -116,14 +115,20 @@ export default {
   position: absolute;
   font-size: 45px;
   cursor: pointer;
+  transition: border 0.2s;
+}
+
+.selected {
+  border: 2px solid #ff9800; /* Orange border when selected */
+  border-radius: 5px; /* Optional: rounded corners */
 }
 
 .alert-gif {
   position: fixed;
-  top: 50%;
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 80%;
+  max-width: 500px;
   z-index: 1000;
   border-radius: 10px;
 }
