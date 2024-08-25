@@ -1,238 +1,112 @@
-
 <template>
-  
   <div class="match-key-captcha">
-   
-      <h1 style="display: flex; justify-content: center; align-items: center; height: 15vh; ">PUZZLE CAPTCHA {{ numberOfTries }}</h1>
-      <h2 style="display: flex; justify-content: center; align-items: center;margin-bottom: 20px;">Open the lock with the key</h2>
+    <h1>PUZZLE CAPTCHA {{ numberOfTries }}</h1>
+    <h2>Open the lock with the key</h2>
     
     <div class="captcha-container">
+      <!-- Locks -->
       <div
-        
+        v-for="lock in locks"
+        :key="lock.id"
         class="lock"
-        :style="{ left: `100px`, top: `50px` }"
-      >
-      🔓
-    </div>
-      <div
-        
-        class="lock"
-        :style="{ left: `200px`, top: `50px` }"
+        :style="{ left: `${lock.left}px`, top: `${lock.top}px` }"
+        @click="selectLock(lock)"
       >
         🔒
       </div>
-      <div
-        
-        class="lock"
-        :style="{ left: `300px`, top: `50px` }"
-      >
-      🔓
-      </div>
+      <!-- Key -->
       <div
         class="key"
         :style="{ left: `${keyPosition.left}px`, top: `${keyPosition.top}px` }"
-        @mousedown="startDrag"
+        @click="selectKey"
       >
         🔑
       </div>
     </div>
     <div class="captcha-button-container">
-  <button class="captcha-button" @click="checkMatch">Submit</button>
-  
-</div>
-<img v-if="showGif" :src="gifUrl" alt="Alert GIF" class="alert-gif" />
+      <button class="captcha-button" @click="checkMatch">Submit</button>
+    </div>
+    <img v-if="showGif" :src="gifUrl" alt="Alert GIF" class="alert-gif" />
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import { mapState, mapActions, mapGetters } from 'vuex';
-import successGif from '../../assets/images/verification_success.gif'; // Path to your success GIF
+import successGif from '../../assets/images/verification_success.gif';
 import failureGif from '../../assets/images/verification_failure.gif';
+
 export default {
   data() {
     return {
       keyPosition: { left: 10, top: 200 },
-      isDragging: false,
-      startX: 0,
-      startY: 0,
+      selectedKey: false,
+      selectedLock: null,
       numberOfTries: 0,
-      timerSpent: 0,
-      offsetLeft: 0,
-      offsetTop: 0,
       showGif: false,
       gifUrl: '',
-    
-  props: {
-    visible: {
-      type: Boolean,
-      required: true,
-    },
-    gifUrl: {
-      type: String,
-      required: true,
-    },
-  },
       locks: [
         { id: 1, left: 100, top: 50 },
         { id: 2, left: 200, top: 50 },
         { id: 3, left: 300, top: 50 },
       ],
-      matchedLock: { left: 200, top: 50 }, // Set this to the correct lock position
+      correctLockId: 2, // Assuming lock with id 2 is the correct one
     };
   },
-  beforeMount() {
-  this.entryTime = new Date(); // Record the entry time
-  this.startTimer();
-},
-beforeDestroy() {
-  this.stopTimer();
-},
-
-  
-  computed: {
-    ...mapGetters(['getShuffledCaptchaPages']),
-    ...mapState({
-      attempts: (state) => state.captchaAttempts_text,
-    }),
-  },
   methods: {
-  ...mapActions(['updatePuzzlePageTimeSpent','updatePuzzlePageNumberOfAttempts','incrementAttempts_text']),
+    selectKey() {
+      this.selectedKey = true;
+      console.log('Key selected');
+    },
 
-  saveTheTime() {
-    this.updatePuzzlePageTimeSpent(this.timerSpent);
-    this.updatePuzzlePageNumberOfAttempts(this.numberOfTries);
-  },
-
-  startTimer() {
-    this.timer = setInterval(() => {
-      this.timerSpent = Math.floor((new Date() - this.entryTime) / 1000);
-    }, 1000);
-  },
-
-  stopTimer() {
-    clearInterval(this.timer);
-  },
-
-  startDrag(event) {
-    this.isDragging = true;
-
-    // Handle touch events
-    if (event.type === 'touchstart') {
-      this.startX = event.touches[0].clientX;
-      this.startY = event.touches[0].clientY;
-    } else {
-      this.startX = event.clientX;
-      this.startY = event.clientY;
-    }
-
-    this.offsetLeft = this.keyPosition.left;
-    this.offsetTop = this.keyPosition.top;
-
-    document.addEventListener('mousemove', this.onDrag);
-    document.addEventListener('mouseup', this.stopDrag);
-    
-    // Add touch event listeners
-    document.addEventListener('touchmove', this.onDrag);
-    document.addEventListener('touchend', this.stopDrag);
-  },
-
-  onDrag(event) {
-    if (this.isDragging) {
-      let moveX, moveY;
-
-      // Handle touch events
-      if (event.type === 'touchmove') {
-        moveX = event.touches[0].clientX - this.startX;
-        moveY = event.touches[0].clientY - this.startY;
-      } else {
-        moveX = event.clientX - this.startX;
-        moveY = event.clientY - this.startY;
+    selectLock(lock) {
+      if (this.selectedKey) {
+        this.selectedLock = lock.id;
+        console.log(`Lock ${lock.id} selected`);
       }
+    },
 
-      this.keyPosition.left = this.offsetLeft + moveX;
-      this.keyPosition.top = this.offsetTop + moveY;
-    }
-  },
-
-  stopDrag() {
-    if (this.isDragging) {
-      this.isDragging = false;
-
-      document.removeEventListener('mousemove', this.onDrag);
-      document.removeEventListener('mouseup', this.stopDrag);
-
-      // Remove touch event listeners
-      document.removeEventListener('touchmove', this.onDrag);
-      document.removeEventListener('touchend', this.stopDrag);
-    }
-  },
-
-  checkMatch() {
-    const threshold = 10; // Adjust this value based on difficulty
-    if (
-      Math.abs(this.keyPosition.left - this.matchedLock.left) < threshold &&
-      Math.abs(this.keyPosition.top - this.matchedLock.top) < threshold
-    ) {
-      this.gifUrl = successGif;
-      this.showGif = true;
-      this.isDragging = true;
-      this.saveTheTime();
+    checkMatch() {
+      if (this.selectedKey && this.selectedLock === this.correctLockId) {
+        this.gifUrl = successGif;
+        this.showGif = true;
+        setTimeout(() => {
+          this.showGif = false;
+          this.$router.push('/Rotatingform');
+        }, 3000);
+      } else {
+        this.gifUrl = failureGif;
+        this.showGif = true;
+      }
+      this.numberOfTries++;
       setTimeout(() => {
         this.showGif = false;
+      }, 6000);
+      if (this.numberOfTries >= 5) {
         this.$router.push('/Rotatingform');
-      }, 3000);
-      
-    } else {
-      this.gifUrl = failureGif; // Set the failure GIF
-      this.showGif = true;
-    }
-    this.numberOfTries++;
-    setTimeout(() => {
-      this.showGif = false; // Hide the GIF after 3 seconds
-    }, 6000);
-    if (this.numberOfTries >= 5) {
-      this.$router.push('/Rotatingform');
-    }
+      }
+    },
   },
-}
-
 };
 </script>
 
 <style scoped>
-.alert-gif {
-  position: fixed;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 500px;
-  z-index: 1000;
-  border-radius: 10px;
-}
 .match-key-captcha {
-  
   text-align: center;
-  
   background-color: #a8e685;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  font: 1em cosmic sans;
   font-size: 130%;
-  margin-top: auto;
   font-family: 'OpenDyslexic', Arial, sans-serif;
 }
 
-
-
 .captcha-container {
   position: relative;
-  width: 400px;
+  width: 90%;
+  max-width: 400px;
   height: 300px;
-  margin: 40px;
+  margin: 20px auto;
   border: 1px solid #ccc;
   background-color: #f9f9f9;
   background-image: url('../../assets/images/key.jpg');
@@ -241,11 +115,16 @@ beforeDestroy() {
 .lock, .key {
   position: absolute;
   font-size: 45px;
-  cursor: grab;
-  
+  cursor: pointer;
 }
 
-.key:active {
-  cursor: grabbing;
+.alert-gif {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 80%;
+  z-index: 1000;
+  border-radius: 10px;
 }
 </style>
