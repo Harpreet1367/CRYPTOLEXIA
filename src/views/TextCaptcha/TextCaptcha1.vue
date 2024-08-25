@@ -87,7 +87,7 @@
       clearInterval(this.timer);
     },
       async generateCaptcha() {
-       const data = await axios.get('https://cryptolexia.ahmedghaleb.com/api/random-captcha');
+       const data = await axios.get('https://captchalexia.preetkaur19.com/api/random-captcha');
         console.log(data.data);
         this.captchaText = data.data.captcha_text;
         console.log(this.captchaText);

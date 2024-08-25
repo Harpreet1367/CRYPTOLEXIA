@@ -59,7 +59,7 @@ export default {
     async submitDetails() {
       try {
         this.submitted = true;
-        const response = await axios.post('https://cryptolexia.ahmedghaleb.com/api/username', {
+        const response = await axios.post('https://captchalexia.preetkaur19.com/api/username', {
           username: this.username,
           gender: this.gender,
           School: this.School

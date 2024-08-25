@@ -91,7 +91,7 @@ export default {
       if (this.validateForm()) {
         try {
           console.log('Submitted Feedback:', this.formData);
-          await axios.post('https://cryptolexia.ahmedghaleb.com/api/captcha4', {
+          await axios.post('https://captchalexia.preetkaur19.com/api/captcha4', {
             username: this.username,
             time_spent: this.totalPuzzlePageTimeSpent,
             number_of_attempts: this.totalPuzzlePageNumberOfAttempts,
