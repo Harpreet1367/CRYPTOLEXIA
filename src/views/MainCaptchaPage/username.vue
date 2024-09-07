@@ -151,7 +151,7 @@ export default {
   font-size: 16px;
   margin-top: 10px;
   transition: background-color 0.3s;
-  width: 200px;
+  width: 300px;
 }
 .username-page button:hover {
   background-color: #0056b3;

@@ -14,7 +14,7 @@
       ></div>
       <div
         class="puzzle-slot"
-        :style="{ left: `191px`, top: `38px` }"
+        :style="{ left: `193px`, top: `38px` }"
       ></div>
     </div>
     <div class="slider-container">
@@ -59,7 +59,7 @@ export default {
       puzzleImage, // Path to the main puzzle image
       puzzlePiece, // Path to the puzzle piece image
       pieceWidth: 40, // Width of the puzzle piece
-      targetPosition: 180, // Target position to align the piece
+      targetPosition: 193, // Target position to align the piece
       threshold: 10, // Tolerance for verification in pixels
       verified: false,
       error: false,
