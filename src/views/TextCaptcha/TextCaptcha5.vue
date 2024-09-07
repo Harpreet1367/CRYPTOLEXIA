@@ -112,7 +112,7 @@ export default {
     },
     drawCrossLines(ctx, width, height) {
       ctx.strokeStyle = '#888';
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 12; i++) {
         ctx.beginPath();
         ctx.moveTo(Math.random() * width, 0);
         ctx.lineTo(Math.random() * width, height);

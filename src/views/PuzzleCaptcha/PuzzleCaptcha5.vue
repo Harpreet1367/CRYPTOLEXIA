@@ -1,45 +1,35 @@
 <template>
-  
   <div class="match-key-captcha">
-   
-      <h1 style="display: flex; justify-content: center; align-items: center; height: 15vh; ">PUZZLE CAPTCHA {{ numberOfTries }}</h1>
-      <h2 style="display: flex; justify-content: center; align-items: center;margin-bottom: 20px;">Open the lock with the key</h2>
-    
+    <h1 style="display: flex; justify-content: center; align-items: center; height: 15vh;">
+      PUZZLE CAPTCHA {{ numberOfTries }}
+    </h1>
+    <h2 style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+      Open the lock with the key
+    </h2>
+
     <div class="captcha-container">
       <div
-        
         class="lock"
-        :style="{ left: `100px`, top: `50px` }"
+        :style="{ left: `${lock.left}px`, top: `${lock.top}px` }"
+        v-for="(lock, index) in locks"
+        :key="index"
+        @click="moveKeyToLock(lock)"
       >
-      🔓
-    </div>
-      <div
-        
-        class="lock"
-        :style="{ left: `200px`, top:` 50px` }"
-      >
-        🔒
-      </div>
-      <div
-        
-        class="lock"
-        :style="{ left: `300px`, top: `50px` }"
-      >
-      🔓
+        {{ lock.id === matchedLock.id ? '🔒' : '🔓' }}
       </div>
       <div
         class="key"
-        :style="{ left:` ${keyPosition.left}px`, top: `${keyPosition.top}px` }"
-        @mousedown="startDrag"
+        :style="{ left: `${keyPosition.left}px`, top: `${keyPosition.top}px` }"
+        @click="selectKey"
       >
         🔑
       </div>
     </div>
+
     <div class="captcha-button-container">
-  <button class="captcha-button" @click="checkMatch">Submit</button>
-  
-</div>
-<img v-if="showGif" :src="gifUrl" alt="Alert GIF" class="alert-gif" />
+      <button class="captcha-button" @click="checkMatch">Submit</button>
+    </div>
+    <img v-if="showGif" :src="gifUrl" alt="Alert GIF" class="alert-gif" />
   </div>
 </template>
 
@@ -48,53 +38,38 @@ import axios from 'axios';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import successGif from '../../assets/images/verification_success.gif'; // Path to your success GIF
 import failureGif from '../../assets/images/verification_failure.gif';
+
 export default {
   data() {
     return {
       keyPosition: { left: 10, top: 200 },
-      isDragging: false,
-      startX: 0,
-      startY: 0,
+      keySelected: false,
       numberOfTries: 0,
       timerSpent: 0,
-      offsetLeft: 0,
-      offsetTop: 0,
       showGif: false,
       gifUrl: '',
-    
-  props: {
-    visible: {
-      type: Boolean,
-      required: true,
-    },
-    gifUrl: {
-      type: String,
-      required: true,
-    },
-  },
       locks: [
         { id: 1, left: 100, top: 50 },
         { id: 2, left: 200, top: 50 },
         { id: 3, left: 300, top: 50 },
       ],
-      matchedLock: { left: 200, top: 50 }, // Set this to the correct lock position
+      matchedLock: { id: 2, left: 200, top: 50 }, // Set this to the correct lock position
     };
   },
   beforeMount() {
-  this.entryTime = new Date(); // Record the entry time
-  this.startTimer();
-},
-beforeDestroy() {
-  this.stopTimer();
-},
-
-  
+    this.entryTime = new Date(); // Record the entry time
+    this.startTimer();
+  },
+  beforeDestroy() {
+    this.stopTimer();
+  },
   computed: {
     ...mapGetters(['getShuffledCaptchaPages']),
     ...mapState({
       attempts: (state) => state.captchaAttempts_text,
     }),
   },
+
   methods: {
     ...mapActions(['updatePuzzlePageTimeSpent','updatePuzzlePageNumberOfAttempts','incrementAttempts_text']),
       
@@ -102,7 +77,8 @@ beforeDestroy() {
       this.updatePuzzlePageTimeSpent(this.timerSpent);
       this.updatePuzzlePageNumberOfAttempts(this.numberOfTries);
     },
-      startTimer() {
+
+    startTimer() {
       this.timer = setInterval(() => {
         this.timerSpent = Math.floor((new Date() - this.entryTime) / 1000);
       }, 1000);
@@ -110,29 +86,14 @@ beforeDestroy() {
     stopTimer() {
       clearInterval(this.timer);
     },
-    startDrag(event) {
-      this.isDragging = true;
-      this.startX = event.clientX;
-      this.startY = event.clientY;
-      this.offsetLeft = this.keyPosition.left;
-      this.offsetTop = this.keyPosition.top;
-      document.addEventListener('mousemove', this.onDrag);
-      document.addEventListener('mouseup', this.stopDrag);
+    selectKey() {
+      this.keySelected = true; // Set the key as selected
     },
-    onDrag(event) {
-      if (this.isDragging) {
-        const moveX = event.clientX - this.startX;
-        const moveY = event.clientY - this.startY;
-        this.keyPosition.left = this.offsetLeft + moveX;
-        this.keyPosition.top = this.offsetTop + moveY;
-      }
-    },
-    stopDrag() {
-      if (this.isDragging) {
-        this.isDragging = false;
-        document.removeEventListener('mousemove', this.onDrag);
-        document.removeEventListener('mouseup', this.stopDrag);
-        //this.checkMatch();
+    moveKeyToLock(lock) {
+      if (this.keySelected) {
+        this.keyPosition.left = lock.left;
+        this.keyPosition.top = lock.top;
+        this.keySelected = false; // Reset after moving
       }
     },
     checkMatch() {
@@ -158,7 +119,7 @@ beforeDestroy() {
       this.numberOfTries++;
       setTimeout(() => {
           this.showGif = false; // Hide the GIF after 3 seconds
-        }, 6000);
+        }, 3000);
         //this.incrementAttempts_text();
           if (this.numberOfTries >= 5) {
             this.$router.push('/Rotatingform');
@@ -166,6 +127,7 @@ beforeDestroy() {
     },
   },
 };
+
 </script>
 
 <style scoped>
@@ -178,27 +140,24 @@ beforeDestroy() {
   z-index: 1000;
   border-radius: 10px;
 }
+
 .match-key-captcha {
-  
   text-align: center;
-  
   background-color: #a8e685;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  font: 1em cosmic sans;
   font-size: 130%;
   margin-top: auto;
   font-family: 'OpenDyslexic', Arial, sans-serif;
 }
 
-
-
 .captcha-container {
   position: relative;
-  width: 400px;
+  width: 90%;
+  max-width: 400px;
   height: 300px;
   margin: 40px;
   border: 1px solid #ccc;
@@ -209,11 +168,13 @@ beforeDestroy() {
 .lock, .key {
   position: absolute;
   font-size: 45px;
-  cursor: grab;
-  
+  cursor: pointer;
 }
 
-.key:active {
-  cursor: grabbing;
+@media (max-width: 600px) {
+  .captcha-container {
+    width: 100%;
+    height: auto;
+  }
 }
 </style>

@@ -1,19 +1,19 @@
-<!-- src/components/Captcha.vue -->
 <template>
   <div class="captcha-container">
-    <h1 style="display: flex; justify-content: center; align-items: center; height: 20vh; ">TEXT CAPTCHA {{ numberOfTries }}</h1>
-    <h2 style="display: flex; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 40px;">Enter the text below</h2>
+    <h1 style="display: flex; justify-content: center; align-items: center;">TEXT CAPTCHA {{ numberOfTries }}</h1>
+    <h2 style="display: flex; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px;">Enter the text below</h2>
     
-    <canvas ref="captchaCanvas" class="captcha-canvas"></canvas>
-    <input type="text" v-model="userInput" placeholder="Enter CAPTCHA" />
-    
-    <div class="captcha-button-container">
+    <canvas ref="captchaCanvas" width="300" height="100"></canvas>
+   
+      <input v-model="userInput" placeholder="Enter CAPTCHA" @input="checkCaptcha" />
+      
+      <div class="captcha-button-container">
       <button @click="verifyCaptcha" class="captcha-button">Verify</button>
       
-     
+      
       </div>
       <img v-if="showGif" :src="gifUrl" alt="Alert GIF" class="alert-gif" />
-  </div>
+</div>
 </template>
 
 <script>
@@ -22,16 +22,16 @@ import { mapActions , mapState, mapGetters} from 'vuex';
 import successGif from '../../assets/images/verification_success.gif'; // Path to your success GIF
 import failureGif from '../../assets/images/verification_failure.gif';
 export default {
+  name: 'GimpyCaptcha',
   data() {
     return {
-      
-        captchaText: '',
-        numberOfTries: 0,
-        userInput: '',
-        captchaVerified: false,
-        timerSpent: 0,
-        clickedtoVerification: false,
-          showGif: false,
+      captchaText: '',
+      numberOfTries: 0,
+      userInput: '',
+      captchaVerified: false,
+      timerSpent: 0,
+      clickedtoVerification: false,
+      showGif: false,
       gifUrl: '',
     
   props: {
@@ -53,8 +53,9 @@ export default {
   beforeDestroy() {
     this.stopTimer();
   },
+
   mounted() {
-    this.generateCaptcha();
+    this.refreshCaptcha();
   },
   computed: {
     ...mapGetters(['getShuffledCaptchaPages']),
@@ -62,10 +63,9 @@ export default {
       attempts: (state) => state.captchaAttempts_text,
     }),
   },
-  methods: 
-  {
+  methods: {
     ...mapActions(['updateTextPageTimeSpent','updateTextPageNumberOfAttempts','incrementAttempts_text']),
-      
+
       saveTheTime() {
       this.updateTextPageTimeSpent(this.timerSpent);
       this.updateTextPageNumberOfAttempts(this.numberOfTries);
@@ -77,42 +77,95 @@ export default {
     },
     stopTimer() {
       clearInterval(this.timer);
-    },
-      
-      
-    generateCaptcha() {
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let text = '';
+    }, 
+    generateCaptchaText() {
+      // Generate a random string for CAPTCHA
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
       for (let i = 0; i < 6; i++) {
-        text += characters.charAt(Math.floor(Math.random() * characters.length));
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      this.captchaText = text;
-      this.drawCaptcha(text);
+      return result;
     },
-    drawCaptcha(text) {
+    refreshCaptcha() {
+      this.captchaText = this.generateCaptchaText();
+      this.drawCaptcha();
+      this.userInput = '';
+    },
+    drawCaptcha() {
       const canvas = this.$refs.captchaCanvas;
       const ctx = canvas.getContext('2d');
-      canvas.width = 150;
-      canvas.height = 50;
+      const { width, height } = canvas;
+      ctx.clearRect(0, 0, width, height);
 
-      // Background
-      ctx.fillStyle = '#f3f3f3';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Draw complex background
+      this.drawComplexBackground(ctx, width, height);
 
-      // Text
-      ctx.font = '30px Arial';
-      ctx.fillStyle = '#000';
-      ctx.setTransform(1, -0.12, 0.3, 1, 0, 0); // Skew transformation
-      ctx.fillText(text, 10, 35);
+      // Draw distorted text with heavy obfuscation
+      this.drawGimpyText(ctx, width, height);
+    },
+    drawComplexBackground(ctx, width, height) {
+      // Fill the background with a noisy pattern
+      ctx.fillStyle = '#e0e0e0';
+      ctx.fillRect(0, 0, width, height);
 
-      // Noise
-      for (let i = 0; i < 5; i++) {
+      // Add random lines
+      ctx.strokeStyle = this.getRandomColor();
+      for (let i = 0; i < 10; i++) {
         ctx.beginPath();
-        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-        ctx.strokeStyle = '#000';
+        ctx.moveTo(Math.random() * width, Math.random() * height);
+        ctx.lineTo(Math.random() * width, Math.random() * height);
         ctx.stroke();
       }
+
+      // Add random arcs
+      ctx.strokeStyle = this.getRandomColor();
+      for (let i = 0; i < 20; i++) {
+        ctx.beginPath();
+        ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 20, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    },
+    drawGimpyText(ctx, width, height) {
+      const chars = this.captchaText.split('');
+      ctx.font = 'bold 48px Arial';
+      ctx.textBaseline = 'middle';
+      const spacing = 25;
+
+      chars.forEach((char, index) => {
+        const x = spacing * index + 25;
+        const y = height / 2;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(Math.random() * 0.5 - 0.25); // Rotate more heavily
+        ctx.transform(1, Math.random() * 0.5 - 0.25, Math.random() * 0.5 - 0.25, 1, 0, 0); // Stronger skew
+
+        // Draw multiple layers of text for distortion
+        for (let i = 0; i < 3; i++) {
+          ctx.fillStyle = this.getRandomColor();
+          ctx.fillText(char, Math.random() * 5 - 2.5, Math.random() * 5 - 2.5);
+        }
+
+        ctx.restore();
+      });
+
+      // Add overlapping random lines to further obfuscate the text
+      ctx.strokeStyle = this.getRandomColor();
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * width, Math.random() * height);
+        ctx.lineTo(Math.random() * width, Math.random() * height);
+        ctx.stroke();
+      }
+    },
+    getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
     },
     verifyCaptcha() {
       if (this.userInput === this.captchaText) {
@@ -124,12 +177,11 @@ export default {
         setTimeout(() => {
           this.showGif = false;
         this.$router.push('/TextCaptcha3');
-
         }, 3000);
-      } else{
+      } else {
           this.gifUrl = failureGif; // Set the failure GIF
         this.showGif = true; 
-        this.generateCaptcha();
+        this.refreshCaptcha();
         this.userInput = "";
 
         setTimeout(() => {
@@ -149,14 +201,17 @@ export default {
 <style scoped>
 .alert-gif {
   position: fixed;
-  top: 65%;
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 600px;
+  max-width: 500px;
   z-index: 1000;
   border-radius: 10px;
 }
 .captcha-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   
   background-color: #a8e685;
@@ -169,23 +224,23 @@ export default {
   font-size: 130%;
   margin-top: auto;
   font-family: 'OpenDyslexic', Arial, sans-serif;
-  }
-
+}
 .captcha-canvas {
-  border: 5px solid #ccc;
+  border: 1px solid #ccc;
   margin-bottom: 10px;
   margin: 50px;
   width: 300px;
-  height: 80px;
+  height: 100px;
   text-align: center;
   font-size: 50px;
   color: #000;
 }
-input {
-  margin-bottom: 10px;
-  padding: 5px;
-  font-size: 16px;
-}
+.captcha-text {
+    font-size: 50px;
+    margin-bottom: 20px;
+    margin-top: 50px;
+  }
+
 button {
   padding: 5px 10px;
   font-size: 16px;
@@ -195,7 +250,7 @@ button {
   {
     display: flex;
     justify-content: center;
-    gap: 100px;
+    gap: 10px;
   }
   .captcha-button {
     font-size: 1rem;
@@ -212,4 +267,17 @@ button {
   .captcha-button:hover {
     background-color: #0056b3;
   }
+input {
+  padding: 5px;
+  font-size: 16px;
+  width: 150px;
+  margin-right: 5px;
+}
+canvas {
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+}
+
+
 </style>

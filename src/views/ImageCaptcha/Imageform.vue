@@ -198,7 +198,7 @@ export default {
   text-align: 20px;
   background-color: white;
   font-size: 20px;
-  width: 600px;
+  width: 450px;
 }
 .form-group {
   margin-bottom: 15px;

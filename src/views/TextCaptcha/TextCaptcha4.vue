@@ -2,41 +2,35 @@
   <div class="captcha-container">
     <h1 style="display: flex; justify-content: center; align-items: center;">TEXT CAPTCHA {{ numberOfTries }}</h1>
     <h2 style="display: flex; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px;">Enter the text below</h2>
-    <div class="captcha-image">
-      <div class="text-gimphy">
-        {{ captchaText }}
-      </div>
-    </div>
-    <input
-      type="text"
-      v-model="userInput"
-      placeholder="Enter the text you see"
-    />
+
+    <canvas ref="captchaCanvas" width="300" height="100"></canvas>
+    <input type="text" v-model="userInput" placeholder="Enter CAPTCHA" />
+    
     <div class="captcha-button-container">
       <button @click="verifyCaptcha" class="captcha-button">Verify</button>
       
-     
+      
       </div>
       <img v-if="showGif" :src="gifUrl" alt="Alert GIF" class="alert-gif" />
-  </div>
+</div>
 </template>
 
 <script>
- import axios from 'axios';
- import { mapActions , mapState, mapGetters} from 'vuex';
- import successGif from '../../assets/images/verification_success.gif'; // Path to your success GIF
- import failureGif from '../../assets/images/verification_failure.gif';
- export default
- {
+import axios from 'axios';
+import { mapActions , mapState, mapGetters} from 'vuex';
+import successGif from '../../assets/images/verification_success.gif'; // Path to your success GIF
+import failureGif from '../../assets/images/verification_failure.gif';
+export default {
+  name: 'Distorted3DCaptcha',
   data() {
     return {
-      userInput: '',
       captchaText: '',
       numberOfTries: 0,
+      userInput: '',
       captchaVerified: false,
       timerSpent: 0,
       clickedtoVerification: false,
-          showGif: false,
+      showGif: false,
       gifUrl: '',
     
   props: {
@@ -58,8 +52,9 @@
   beforeDestroy() {
     this.stopTimer();
   },
+
   mounted() {
-    this.generateCaptchaText();
+    this.refreshCaptcha();
   },
   computed: {
     ...mapGetters(['getShuffledCaptchaPages']),
@@ -69,8 +64,8 @@
   },
   methods: {
     ...mapActions(['updateTextPageTimeSpent','updateTextPageNumberOfAttempts','incrementAttempts_text']),
-   
-   saveTheTime() {
+
+      saveTheTime() {
       this.updateTextPageTimeSpent(this.timerSpent);
       this.updateTextPageNumberOfAttempts(this.numberOfTries);
     },
@@ -81,17 +76,77 @@
     },
     stopTimer() {
       clearInterval(this.timer);
-    },
+    }, 
+
     generateCaptchaText() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let result = '';
       for (let i = 0; i < 6; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      this.captchaText = result;
+      return result;
+    },
+    refreshCaptcha() {
+      this.captchaText = this.generateCaptchaText();
+      this.drawCaptcha();
+      this.userInput = '';
+    },
+    drawCaptcha() {
+      const canvas = this.$refs.captchaCanvas;
+      const ctx = canvas.getContext('2d');
+      const { width, height } = canvas;
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw heavily distorted and tightly connected 3D text with gradient color
+      this.drawDistorted3DText(ctx, width, height);
+    },
+    drawDistorted3DText(ctx, width, height) {
+      const chars = this.captchaText.split('');
+      ctx.font = 'bold 48px Arial';
+      ctx.textBaseline = 'middle';
+      const spacing = 30; // Reduced spacing for tighter connection
+      const depth = 6; // Increased depth for more pronounced 3D effect
+
+      // Create gradient for text color
+      const gradient = ctx.createLinearGradient(0, 0, width, 0);
+      gradient.addColorStop(0, '#0D47A1'); // Dark Blue
+      gradient.addColorStop(1, '#42A5F5'); // Light Blue
+
+      chars.forEach((char, index) => {
+        const x = spacing * index + 15; // Adjusted for tighter connection
+        const y = height / 2;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(Math.random() * 0.6 - 0.3); // Increased rotation for more distortion
+        ctx.transform(1, Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3, 1, 0, 0); // Stronger skew and distortion
+
+        // Draw the shadow (3D effect)
+        for (let i = depth; i > 0; i--) {
+          ctx.fillStyle = `rgba(0, 0, 0, ${1 - i / (depth + 1)})`;
+          ctx.fillText(char, i, i);
+        }
+
+        // Alternate between gradient and white for text color
+        ctx.fillStyle = index % 2 === 0 ? gradient : '#FFFFFF';
+        ctx.fillText(char, 0, 0);
+
+        ctx.restore();
+      });
+
+      // Adding more obfuscation with curved lines
+      
+    },
+    getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
     },
     verifyCaptcha() {
-      if (this.userInput.toUpperCase() === this.captchaText) {
+      if (this.userInput === this.captchaText) {
         this.gifUrl = successGif; // Set the success GIF
         this.showGif = true;
         this.showSuccess = true;
@@ -104,7 +159,7 @@
       } else {
           this.gifUrl = failureGif; // Set the failure GIF
         this.showGif = true; 
-        this.generateCaptchaText();
+        this.refreshCaptcha();
         this.userInput = "";
 
         setTimeout(() => {
@@ -116,8 +171,8 @@
           if (this.numberOfTries >= 5) {
             this.$router.push('/TextCaptcha5');
           }
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -148,61 +203,26 @@
   margin-top: auto;
   font-family: 'OpenDyslexic', Arial, sans-serif;
 }
-
-.captcha-image {
+.captcha-canvas {
+  border: 1px solid #ccc;
   margin-bottom: 10px;
-}
-
-.text-gimphy {
-  font-size: 48px;
   margin: 50px;
-  color: #333;
-  font-size: 60px;
-  text-shadow:
-    2px 2px 0 #aaa,
-    3px 3px 0 #999,
-    4px 4px 0 #888,
-    5px 5px 0 #777,
-    6px 6px 0 #666,
-    7px 7px 0 #555,
-    8px 8px 0 #444,
-    9px 9px 0 #333,
-    10px 10px 0 #222;
-  animation: gimphy 1.5s infinite;
+  width: 300px;
+  height: 100px;
+  text-align: center;
+  font-size: 50px;
+  color: #000;
 }
+.captcha-text {
+    font-size: 50px;
+    margin-bottom: 20px;
+    margin-top: 50px;
+  }
 
-@keyframes gimphy {
-  0%, 100% {
-    transform: skewX(0deg);
-  }
-  25% {
-    transform: skewX(5deg);
-  }
-  50% {
-    transform: skewX(-5deg);
-  }
-  75% {
-    transform: skewX(5deg);
-  }
-}
-
-.gimphy-text-captcha input {
-  padding: 8px;
+button {
+  padding: 5px 10px;
   font-size: 16px;
-  width: 200px;
-}
-
-.gimphy-text-captcha button {
-  padding: 8px 16px;
-  font-size: 16px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
   cursor: pointer;
-}
-
-.gimphy-text-captcha button:hover {
-  background-color: #45a049;
 }
 .captcha-button-container 
   {
@@ -225,4 +245,18 @@
   .captcha-button:hover {
     background-color: #0056b3;
   }
+  input {
+  padding: 5px;
+  font-size: 16px;
+  width: 150px;
+  margin-right: 5px;
+}
+
+
+
+canvas {
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+}
 </style>
