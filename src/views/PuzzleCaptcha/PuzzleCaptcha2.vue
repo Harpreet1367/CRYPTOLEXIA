@@ -8,13 +8,13 @@
         class="puzzle-piece"
         :style="{
           left: `${puzzlePieceX}px`,
-          top: `-3px`,
+          top: `38px`,
           backgroundImage: `url(${puzzlePiece})`,
         }"
       ></div>
       <div
         class="puzzle-slot"
-        :style="{ left: `185px`, top: `-5px` }"
+        :style="{ left: `191px`, top: `38px` }"
       ></div>
     </div>
     <div class="slider-container">
@@ -194,7 +194,7 @@ export default {
 .captcha-container {
   position: relative;
   width: 300px;
-  height: 150px;
+  height: 200px;
   margin-bottom: 20px;
 }
 .captcha-image {
